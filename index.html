@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spanish Egp - Thermal Print Pro Enterprise (2026 Edition)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="manifest" id="pwaManifest"><meta name="theme-color" content="#0f172a"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+body{font-family:'Plus Jakarta Sans',sans-serif;background-color:#0f172a;color:#f8fafc}.code-font{font-family:'JetBrains Mono',monospace}.glass-panel{background:rgba(30,41,59,0.7);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.08)}.glass-card{background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.05)}.draggable-item{position:absolute;cursor:move;user-select:none;touch-action:none;box-sizing:border-box;border:1.5px dashed #38bdf8;border-radius:4px}.draggable-item:hover,.draggable-item.active-item{border:2px solid #818cf8;background:rgba(129,140,248,0.15)}.resize-handle{width:12px;height:12px;background:#6366f1;position:absolute;bottom:-4px;right:-4px;cursor:se-resize;display:none;z-index:50;border-radius:3px;box-shadow:0 0 6px rgba(99,102,241,0.8)}.draggable-item:hover .resize-handle,.draggable-item.active-item .resize-handle{display:block}.safety-zone{position:absolute;inset:1mm;border:1px dotted rgba(239,68,68,0.5);pointer-events:none;z-index:10}img,canvas{image-rendering:-webkit-optimize-contrast!important;image-rendering:crisp-edges!important;image-rendering:pixelated!important}svg{shape-rendering:crispEdges!important;image-rendering:pixelated!important}#toastContainer{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px}.toast{background:rgba(30,41,59,0.95);backdrop-filter:blur(10px);border-left:4px solid #6366f1;color:#fff;padding:12px 20px;border-radius:8px;box-shadow:0 10px 25px -5px rgba(0,0,0,0.5);font-size:12px;display:flex;align-items:center;gap:10px;animation:slideIn 0.3s ease,fadeOut 0.3s ease 2.7s forwards}.toast.error{border-left-color:#ef4444}.toast.success{border-left-color:#10b981}.toast.info{border-left-color:#38bdf8}@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes fadeOut{to{opacity:0;transform:translateY(10px)}}@media screen{#batchPrintContainer{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;position:absolute!important;left:-9999px!important}}@media print{html,body{width:100%!important;height:100%!important;margin:0!important;padding:0!important;background:#fff!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.print-hide{display:none!important}#toastContainer{display:none!important}#batchPrintContainer{display:block!important;visibility:visible!important;opacity:1!important;width:100%!important;margin:0!important;padding:0!important}.batch-card{display:block!important;position:relative!important;page-break-after:always!important;break-after:page!important;page-break-inside:avoid!important;break-inside:avoid!important;margin:0 auto!important;border:none!important;box-sizing:border-box!important;overflow:hidden!important;background:#ffffff!important;color:#000000!important}#batchPrintContainer svg{shape-rendering:crispEdges!important}#batchPrintContainer img,#batchPrintContainer canvas{image-rendering:pixelated!important}}
+</style>
+</head>
+<body class="min-h-screen text-slate-100 flex flex-col">
+<div id="toastContainer" class="print-hide"></div>
+
+<!-- Auth Modal -->
+<div id="authModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-xl z-[200] flex items-center justify-center p-4">
+<div class="glass-panel w-full max-w-md p-8 rounded-3xl shadow-2xl relative overflow-hidden border border-slate-700/50">
+<div class="absolute -top-20 -right-20 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-20 -left-20 w-40 h-40 bg-sky-500/20 rounded-full blur-3xl"></div>
+<div class="text-center space-y-2 mb-8 relative z-10">
+<div class="inline-flex p-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 mb-2"><i data-lucide="shield-check" class="w-8 h-8"></i></div>
+<h2 class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">Spanish Egp Security</h2>
+<p class="text-xs text-slate-400 font-medium">Enterprise Thermal Suite - Authentication Portal</p>
+</div>
+<div class="flex bg-slate-900/80 p-1 rounded-xl mb-6 border border-slate-800 relative z-10">
+<button id="tabSignInBtn" onclick="switchAuthTab('signin')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-indigo-600 text-white shadow-md">Sign In</button>
+<button id="tabSignUpBtn" onclick="switchAuthTab('signup')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-white">Sign Up</button>
+</div>
+
+<!-- Sign In Form -->
+<form id="signInForm" onsubmit="handleSignIn(event)" class="space-y-4 relative z-10">
+<div><label class="block text-xs font-semibold text-slate-300 mb-1.5">Email / Username</label><div class="relative"><i data-lucide="mail" class="w-4 h-4 absolute left-3 top-3 text-slate-500"></i><input type="text" id="signInEmail" required placeholder="user@company.com" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl py-2.5 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-indigo-500"></div></div>
+<div><label class="block text-xs font-semibold text-slate-300 mb-1.5">Password</label><div class="relative"><i data-lucide="lock" class="w-4 h-4 absolute left-3 top-3 text-slate-500"></i><input type="password" id="signInPassword" required placeholder="••••••••" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl py-2.5 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-indigo-500"></div></div>
+<div class="flex items-center justify-between text-xs"><label class="flex items-center gap-2 text-slate-400 cursor-pointer"><input type="checkbox" id="rememberMe" checked class="rounded border-slate-700 bg-slate-900 text-indigo-500"><span>Remember Device</span></label><a href="#" onclick="showToast('Password reset link sent.','info');return false;" class="text-indigo-400 hover:underline">Forgot?</a></div>
+<button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-sky-500 text-white py-3 rounded-xl font-bold text-xs shadow-lg shadow-indigo-500/20">Authenticate & Launch Application</button>
+</form>
+
+<!-- Sign Up Form -->
+<form id="signUpForm" onsubmit="handleSignUp(event)" class="space-y-4 relative z-10 hidden">
+<div><label class="block text-xs font-semibold text-slate-300 mb-1.5">Company Name</label><div class="relative"><i data-lucide="building" class="w-4 h-4 absolute left-3 top-3 text-slate-500"></i><input type="text" id="signUpCompany" required placeholder="Spanish Egp Ltd" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl py-2.5 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-indigo-500"></div></div>
+<div><label class="block text-xs font-semibold text-slate-300 mb-1.5">Username</label><div class="relative"><i data-lucide="user" class="w-4 h-4 absolute left-3 top-3 text-slate-500"></i><input type="text" id="signUpUsername" required placeholder="username" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl py-2.5 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-indigo-500"></div></div>
+<div><label class="block text-xs font-semibold text-slate-300 mb-1.5">Email Address</label><div class="relative"><i data-lucide="mail" class="w-4 h-4 absolute left-3 top-3 text-slate-500"></i><input type="email" id="signUpEmail" required placeholder="user@company.com" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl py-2.5 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-indigo-500"></div></div>
+<div><label class="block text-xs font-semibold text-slate-300 mb-1.5">Create Password</label><div class="relative"><i data-lucide="key" class="w-4 h-4 absolute left-3 top-3 text-slate-500"></i><input type="password" id="signUpPassword" minlength="6" required placeholder="••••••••" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl py-2.5 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-indigo-500"></div></div>
+<button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-3 rounded-xl font-bold text-xs shadow-lg shadow-emerald-500/20">Register & Request OTP</button>
+</form>
+
+<!-- OTP Verification Section -->
+<div id="otpVerifySection" class="space-y-4 relative z-10 hidden">
+<div class="text-center text-xs text-indigo-300 bg-indigo-500/10 p-3 rounded-xl border border-indigo-500/20">ওনারের জিমেইলে পাঠানো ১০ ডিজিটের ওটিপি কোডটি নিচে লিখুন:</div>
+<div><label class="block text-xs font-semibold text-slate-300 mb-1.5">Enter OTP Code</label><input type="text" id="otpInputCode" placeholder="Enter 10-digit OTP" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl py-2.5 px-3 text-xs text-center font-mono tracking-widest text-white focus:outline-none focus:border-indigo-500"></div>
+<button type="button" onclick="handleVerifyOtp()" class="w-full bg-gradient-to-r from-sky-500 to-indigo-500 text-white py-3 rounded-xl font-bold text-xs shadow-lg">Verify OTP & Activate Account</button>
+</div>
+
+<div class="mt-6 pt-4 border-t border-slate-800 text-center text-[10px] text-slate-500 relative z-10">🔒 Secured via Backend Cloud Node.js & Nodemailer OTP</div>
+</div></div>
+
+<div id="printLoader" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] hidden flex flex-col items-center justify-center text-white space-y-4">
+<div class="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+<p class="font-bold text-sm tracking-wide text-slate-200">Rendering Batch Print Layout...</p>
+</div>
+
+<!-- Main App Container -->
+<div class="max-w-[1500px] mx-auto w-full p-4 md:p-6 space-y-6 flex-1 print-hide">
+<header class="glass-panel p-4 rounded-2xl flex flex-wrap justify-between items-center gap-4">
+<div class="flex items-center gap-3">
+<div class="p-2.5 bg-gradient-to-tr from-indigo-600 to-sky-500 rounded-xl text-white shadow-lg"><i data-lucide="printer" class="w-6 h-6"></i></div>
+<div>
+<div class="flex items-center gap-2"><h1 class="text-xl font-black tracking-tight text-white">Spanish Egp Pro</h1><span class="px-2 py-0.5 text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/35 rounded-full">v2026.4 PWA</span></div>
+<p class="text-xs text-slate-400">Microsoft App Ready Thermal Engine</p>
+</div></div>
+<div class="flex items-center gap-3">
+<div id="userBadge" class="hidden flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800"><div class="w-6 h-6 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-[10px] font-bold text-white uppercase" id="userAvatar">U</div><span id="userNameDisplay" class="text-xs font-semibold text-slate-200">User</span><button onclick="handleLogout()" class="text-slate-400 hover:text-red-400 ml-1"><i data-lucide="log-out" class="w-3.5 h-3.5"></i></button></div>
+<button onclick="exportConfigJSON()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5"><i data-lucide="download" class="w-3.5 h-3.5 text-sky-400"></i> Export JSON</button>
+<button onclick="document.getElementById('importFile').click()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5"><i data-lucide="upload" class="w-3.5 h-3.5 text-amber-400"></i> Import JSON</button>
+<input type="file" id="importFile" class="hidden" accept=".json" onchange="importConfigJSON(event)">
+</div></header>
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Designer Controls -->
+<div class="lg:col-span-6 glass-panel p-5 rounded-2xl space-y-5">
+<h2 class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2 border-b border-slate-800 pb-3"><i data-lucide="layout" class="w-4 h-4"></i> 1. Designer & Size Builder</h2>
+<div class="glass-card p-3.5 rounded-xl border border-slate-800 space-y-3">
+<div class="flex justify-between items-center"><span class="text-xs font-semibold text-slate-300">📐 Canvas Dimensions (mm)</span><span id="presetLockStatus" class="text-[10px] font-bold text-emerald-400 hidden flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Active Preset</span></div>
+<div class="grid grid-cols-3 gap-2.5">
+<div><label class="text-[10px] text-slate-400">Preset Title</label><input type="text" id="customName" placeholder="Price Tag" class="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white"></div>
+<div><label class="text-[10px] text-slate-400">Width (mm)</label><input type="number" id="customW" value="50" class="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white" oninput="updateCanvasDimensions()"></div>
+<div><label class="text-[10px] text-slate-400">Height (mm)</label><input type="number" id="customH" value="25" class="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white" oninput="updateCanvasDimensions()"></div>
+</div>
+<button onclick="savePreset()" class="w-full bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-500/30 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5"><i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Save Preset to System</button>
+</div>
+<div class="glass-card p-3.5 rounded-xl border border-slate-800 space-y-3">
+<div class="flex justify-between items-center"><span class="text-xs font-semibold text-slate-300">⚙️ Barcode & QR Protocol Engine</span><span id="barcodeError" class="text-[10px] text-red-400 font-bold hidden">⚠️ Invalid Format</span></div>
+<div class="grid grid-cols-2 gap-3">
+<div><label class="text-[10px] text-slate-400">Barcode Format</label><select id="barcodeType" class="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-200" onchange="triggerLivePreview()"><option value="CODE128">CODE128</option><option value="EAN13">EAN-13</option><option value="CODE39">CODE39</option><option value="EAN8">EAN-8</option><option value="UPC">UPC</option></select></div>
+<div><label class="text-[10px] text-slate-400">QR Correction</label><select id="qrCorrectionLevel" class="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-200" onchange="triggerLivePreview()"><option value="L">Level L</option><option value="M" selected>Level M</option><option value="Q">Level Q</option><option value="H">Level H</option></select></div>
+</div></div>
+<div class="glass-card p-3.5 rounded-xl border border-slate-800 space-y-3">
+<span class="text-xs font-semibold text-slate-300">✏️ Typography & Alignment</span>
+<div class="grid grid-cols-3 gap-2.5">
+<div><label class="text-[10px] text-slate-400">Font Size (px)</label><input type="number" id="fontSizeControl" value="9" min="6" max="24" class="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white" oninput="updateTypographyStyles()"></div>
+<div><label class="text-[10px] text-slate-400">Align</label><select id="textAlignControl" class="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-200" onchange="updateTypographyStyles()"><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+<div><label class="text-[10px] text-slate-400">Weight</label><select id="fontWeightControl" class="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-200" onchange="updateTypographyStyles()"><option value="bold">Bold</option><option value="normal">Normal</option></select></div>
+</div></div>
+<div class="space-y-2">
+<div class="flex justify-between items-center"><button onclick="resetElementPositions()" class="text-[10px] text-indigo-400 hover:underline font-semibold flex items-center gap-1"><i data-lucide="rotate-ccw" class="w-3 h-3"></i> Reset Elements</button></div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+<div id="qrMiniCanvasDisplay" class="text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 truncate">📱 QR: --</div>
+<div id="barcodeMiniCanvasDisplay" class="text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 truncate">📊 Barcode: --</div>
+</div>
+<div class="bg-slate-950/80 p-6 rounded-2xl border border-slate-800 flex items-center justify-center overflow-auto min-h-[220px]">
+<div id="designerCanvas" class="bg-white border-2 border-slate-400 relative shadow-2xl overflow-hidden rounded-xs text-black" style="width: 200px; height: 100px;">
+<div class="safety-zone"></div>
+<div id="drag-qr" class="draggable-item" style="top: 5%; left: 2.5%; width: 20%; height: 40%;"><div id="previewQr" class="w-full h-full flex items-center justify-center pointer-events-none p-0.5"></div><div class="resize-handle"></div></div>
+<div id="drag-model" class="draggable-item text-[9px] font-bold leading-none truncate p-0.5 text-black" style="top: 5%; left: 25%; width: 67.5%; height: 14%;"><span id="txt-model" class="pointer-events-none"></span><div class="resize-handle"></div></div>
+<div id="drag-made" class="draggable-item text-[9px] font-bold leading-none truncate p-0.5 text-black" style="top: 20%; left: 25%; width: 67.5%; height: 14%;"><span id="txt-made" class="pointer-events-none"></span><div class="resize-handle"></div></div>
+<div id="drag-extra" class="draggable-item text-[9px] font-bold leading-none truncate p-0.5 hidden text-black" style="top: 35%; left: 25%; width: 67.5%; height: 14%;"><span id="txt-extra" class="pointer-events-none"></span><div class="resize-handle"></div></div>
+<div id="drag-barcode" class="draggable-item flex items-center justify-center overflow-hidden" style="top: 50%; left: 25%; width: 67.5%; height: 35%;"><svg id="previewBarcode" class="w-full h-full pointer-events-none" preserveAspectRatio="none"></svg><div class="resize-handle"></div></div>
+</div></div></div></div>
+
+<!-- Batch Processing Engine -->
+<div class="lg:col-span-6 glass-panel p-5 rounded-2xl space-y-5">
+<h2 class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2 border-b border-slate-800 pb-3"><i data-lucide="layers" class="w-4 h-4"></i> 2. Batch Processing & Realtime Engine</h2>
+<div class="glass-card p-4 rounded-xl border border-slate-800 space-y-4">
+<div class="grid grid-cols-2 gap-3">
+<div><label class="block text-[11px] font-bold text-slate-300 mb-1">Start Serial Code</label><input type="text" id="batchStartSerial" value="1000000000001" class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs font-mono text-sky-400 font-bold" oninput="triggerLivePreview()"></div>
+<div><div class="flex justify-between items-center mb-1"><label class="block text-[11px] font-bold text-slate-300">Active Preset</label><button onclick="deletePreset()" class="text-[9px] text-red-400 hover:underline">Remove</button></div><select id="batchSizeSelect" class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs font-semibold text-slate-200" onchange="loadPreset()"></select></div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div><label class="block text-[11px] font-bold text-slate-300 mb-1">Model Parameter</label><input type="text" id="batchModel" placeholder="Type model..." class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white" oninput="triggerLivePreview()"></div>
+<div><label class="block text-[11px] font-bold text-slate-300 mb-1">Made In Text</label><input type="text" id="batchMade" placeholder="Type country..." class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white" oninput="triggerLivePreview()"></div>
+</div>
+<div class="border border-slate-800 bg-slate-900/60 p-3 rounded-xl space-y-2.5">
+<label class="text-[11px] font-bold text-slate-300 flex items-center gap-2 cursor-pointer"><input type="checkbox" id="toggleExtraField" onchange="toggleExtraFieldVisibility()" class="rounded border-slate-700 bg-slate-900 text-indigo-500"> Enable Secondary Field</label>
+<div id="extraFieldInputs" class="grid grid-cols-2 gap-2.5 hidden">
+<div><input type="text" id="extraTitle" placeholder="Field Header" class="w-full p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white" oninput="triggerLivePreview()"></div>
+<div><input type="text" id="extraValue" placeholder="Field Value" class="w-full p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white" oninput="triggerLivePreview()"></div>
+</div></div>
+<div><label class="block text-[11px] font-bold text-slate-300 mb-1">Embedded QR Target URL/Text</label><input type="text" id="batchUrl" value="https://example.com" class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-indigo-300" oninput="triggerLivePreview()"></div>
+<div class="grid grid-cols-3 gap-3 border-t border-slate-800 pt-3">
+<div><label class="block text-[10px] font-bold text-slate-400 mb-1">Total Labels</label><input type="number" id="batchTotalCopies" value="50" min="1" max="1000" class="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white text-center"></div>
+<div><label class="block text-[10px] font-bold text-slate-400 mb-1">Copies/Serial</label><input type="number" id="batchCopiesPerSerial" value="2" min="1" class="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white text-center"></div>
+<div><label class="block text-[10px] font-bold text-slate-400 mb-1">Step Jump</label><input type="number" id="batchStep" value="1" min="1" class="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white text-center"></div>
+</div>
+<div class="border-t border-slate-800 pt-3 space-y-2">
+<div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-300 uppercase">🔍 Realtime Preview:</span><div class="flex items-center gap-2"><span id="qrMiniPreviewDisplay" class="text-[10px] bg-slate-800 text-indigo-300 font-mono px-2 py-0.5 rounded">QR: 10×10mm</span><span id="dimensionBadge" class="text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold px-2 py-0.5 rounded">50mm x 25mm</span></div></div>
+<div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex items-center justify-center overflow-auto min-h-[140px]"><div id="singlePageLivePreview" class="bg-white border border-black shadow-2xl relative overflow-hidden rounded-xs text-black"></div></div>
+</div>
+<button onclick="executeBatchPrint()" class="w-full bg-gradient-to-r from-indigo-500 via-sky-500 to-teal-400 text-white py-3.5 rounded-xl font-bold text-xs shadow-xl shadow-indigo-500/20 flex items-center justify-center gap-2"><i data-lucide="printer" class="w-4 h-4"></i> Execute Batch Thermal Print Sequence</button>
+</div></div></div></div>
+
+<div id="batchPrintContainer"></div>
+<style id="dynamicPrintStyle"></style>
+
+<script>
+lucide.createIcons();
+
+const pwaManifestData = {"name":"Spanish Egp Thermal Print Pro","short_name":"Spanish Egp","description":"Enterprise Thermal Label Printing Suite","start_url":window.location.href,"display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'%3E%3Cpath d='M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z'/%3E%3C/svg%3E","sizes":"192x192 512x512","type":"image/svg+xml"}]};
+const pwaBlob = new Blob([JSON.stringify(pwaManifestData)],{type:'application/json'});
+document.getElementById('pwaManifest').setAttribute('href',URL.createObjectURL(pwaBlob));
+
+if('serviceWorker' in navigator){
+window.addEventListener('load',()=>{
+const swCode = `self.addEventListener('install',e=>{self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(res=>res||fetch(e.request).catch(()=>caches.match(e.request))));});`;
+navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode],{type:'text/javascript'}))).catch(()=>{});
+});
+}
+
+function showToast(message, type='success'){
+const container = document.getElementById('toastContainer'); if(!container) return;
+const toast = document.createElement('div'); toast.className=`toast ${type}`;
+toast.innerHTML = `<span>${type==='error'?'⚠️':(type==='info'?'ℹ️':'✅')}</span> <span>${message}</span>`;
+container.appendChild(toast); setTimeout(()=>toast.remove(),3000);
+}
+
+let currentUser = null;
+let tempUsernameForOtp = '';
+
+function checkAuth(){
+const savedUser = localStorage.getItem('thermal_app_user');
+if(savedUser){ currentUser = JSON.parse(savedUser); updateAuthUI(); }
+else { document.getElementById('authModal').classList.remove('hidden'); }
+}
+
+function switchAuthTab(tab){
+const signInForm = document.getElementById('signInForm'), signUpForm = document.getElementById('signUpForm'), otpSection = document.getElementById('otpVerifySection'), tabSignIn = document.getElementById('tabSignInBtn'), tabSignUp = document.getElementById('tabSignUpBtn');
+otpSection.classList.add('hidden');
+if(tab === 'signin'){
+signInForm.classList.remove('hidden'); signUpForm.classList.add('hidden');
+tabSignIn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow-md";
+tabSignUp.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white";
+} else {
+signInForm.classList.add('hidden'); signUpForm.classList.remove('hidden');
+tabSignUp.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow-md";
+tabSignIn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white";
+}
+}
+
+async function handleSignIn(e){
+e.preventDefault();
+const username = document.getElementById('signInEmail').value;
+const password = document.getElementById('signInPassword').value;
+
+try {
+const response = await fetch('http://localhost:3000/api/signin', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ username, password })
+});
+const data = await response.json();
+
+if(data.success){
+currentUser = { name: username };
+if(document.getElementById('rememberMe').checked) {
+localStorage.setItem('thermal_app_user', JSON.stringify(currentUser));
+}
+updateAuthUI();
+showToast(data.message, 'success');
+} else {
+showToast(data.message, 'error');
+}
+} catch(err) {
+showToast('সার্ভার বন্ধ আছে অথবা সংযোগ করা যায়নি!', 'error');
+}
+}
+
+async function handleSignUp(e){
+e.preventDefault();
+const companyName = document.getElementById('signUpCompany').value;
+const username = document.getElementById('signUpUsername').value;
+const email = document.getElementById('signUpEmail').value;
+const password = document.getElementById('signUpPassword').value;
+tempUsernameForOtp = username;
+
+try {
+const response = await fetch('http://localhost:3000/api/signup', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ companyName, username, email, password })
+});
+const data = await response.json();
+
+if(data.success){
+showToast(data.message, 'success');
+document.getElementById('signUpForm').classList.add('hidden');
+document.getElementById('otpVerifySection').classList.remove('hidden');
+} else {
+showToast(data.message, 'error');
+}
+} catch(err) {
+showToast('সার্ভারের সাথে সংযোগ স্থাপন করা যায়নি!', 'error');
+}
+}
+
+async function handleVerifyOtp(){
+const otp = document.getElementById('otpInputCode').value.trim();
+if(!otp){ showToast('দয়া করে ওটিপি কোড দিন', 'error'); return; }
+
+try {
+const response = await fetch('http://localhost:3000/api/verify-signup-otp', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ username: tempUsernameForOtp, otp })
+});
+const data = await response.json();
+
+if(data.success){
+showToast(data.message, 'success');
+document.getElementById('otpVerifySection').classList.add('hidden');
+switchAuthTab('signin');
+} else {
+showToast(data.message, 'error');
+}
+} catch(err) {
+showToast('সার্ভার এরর হয়েছে!', 'error');
+}
+}
+
+function updateAuthUI(){
+document.getElementById('authModal').classList.add('hidden');
+const userBadge = document.getElementById('userBadge'); userBadge.classList.remove('hidden');
+document.getElementById('userNameDisplay').innerText = currentUser.name || currentUser.email;
+document.getElementById('userAvatar').innerText = (currentUser.name || currentUser.email).charAt(0).toUpperCase();
+}
+function handleLogout(){
+localStorage.removeItem('thermal_app_user'); currentUser = null;
+document.getElementById('userBadge').classList.add('hidden');
+document.getElementById('authModal').classList.remove('hidden');
+showToast('Logged out.', 'info');
+}
+
+let customPresets = {}, elementPositions = {qr:{top:5,left:2.5,width:20,height:40},model:{top:5,left:25,width:67.5,height:14},made:{top:20,left:25,width:67.5,height:14},extra:{top:35,left:25,width:67.5,height:14},barcode:{top:50,left:25,width:67.5,height:35}};
+
+function getCanvasDimensions(){
+const w = parseFloat(document.getElementById('customW').value), h = parseFloat(document.getElementById('customH').value);
+return {w: isNaN(w) || w <= 0 ? 50 : w, h: isNaN(h) || h <= 0 ? 25 : h};
+}
+function updateCanvasDimensions(){
+const dims = getCanvasDimensions(), canvas = document.getElementById('designerCanvas');
+canvas.style.width = (dims.w * 4) + 'px'; canvas.style.height = (dims.h * 4) + 'px';
+document.getElementById('dimensionBadge').innerText = `${dims.w}mm x ${dims.h}mm`;
+triggerLivePreview();
+}
+function updateQrMetrics(){
+const dims = getCanvasDimensions();
+const qrW_mm = (dims.w * (elementPositions.qr.width / 100)).toFixed(1);
+const qrSide = Math.min(parseFloat(qrW_mm), parseFloat(dims.h * (elementPositions.qr.height / 100)));
+const qrArea = (qrSide * qrSide).toFixed(1);
+const qrDisplay = document.getElementById('qrMiniCanvasDisplay'), qrMiniPreview = document.getElementById('qrMiniPreviewDisplay');
+const isGoodSize = qrSide >= 12.0;
+qrDisplay.className = `text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg border truncate ${isGoodSize ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-red-500/10 text-red-400 border-red-500/30 animate-pulse'}`;
+qrDisplay.innerHTML = `📱 QR: ${qrSide}mm (${qrArea}mm²) ${isGoodSize ? '🟢 Ready' : '🔴 Small'}`;
+qrMiniPreview.innerText = `QR: ${qrSide}×${qrSide}mm`;
+}
+
+// নতুন ডাইনামিক বারকোড মেট্রিকস ফাংশন
+function updateBarcodeMetrics(){
+const dims = getCanvasDimensions();
+const barW_mm = (dims.w * (elementPositions.barcode.width / 100)).toFixed(1);
+const barH_mm = (dims.h * (elementPositions.barcode.height / 100)).toFixed(1);
+const isGoodSize = parseFloat(barW_mm) >= 15.0 && parseFloat(barH_mm) >= 6.0;
+const barDisplay = document.getElementById('barcodeMiniCanvasDisplay');
+if(barDisplay){
+barDisplay.className = `text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg border truncate ${isGoodSize ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-red-500/10 text-red-400 border-red-500/30 animate-pulse'}`;
+barDisplay.innerHTML = `📊 Barcode: ${barW_mm}×${barH_mm}mm ${isGoodSize ? '🟢 Ready' : '🔴 Small'}`;
+}
+}
+
+function toggleExtraFieldVisibility(){
+const isChecked = document.getElementById('toggleExtraField').checked;
+document.getElementById('extraFieldInputs').classList.toggle('hidden', !isChecked);
+document.getElementById('drag-extra').classList.toggle('hidden', !isChecked);
+triggerLivePreview();
+}
+function updateTypographyStyles(){
+const fontSize = document.getElementById('fontSizeControl').value + 'px', textAlign = document.getElementById('textAlignControl').value, fontWeight = document.getElementById('fontWeightControl').value;
+['drag-model','drag-made','drag-extra'].forEach(id=>{
+const el = document.getElementById(id); if(el){ el.style.fontSize = fontSize; el.style.textAlign = textAlign; el.style.fontWeight = fontWeight; }
+});
+triggerLivePreview();
+}
+function savePreset(){
+const name = document.getElementById('customName').value.trim(), dims = getCanvasDimensions();
+if(!name){ showToast('Enter preset name!', 'error'); return; }
+const key = 'custom_' + Date.now();
+customPresets[key] = {
+name: `${name} (${dims.w}×${dims.h}mm)`, w: dims.w, h: dims.h,
+barcodeType: document.getElementById('barcodeType').value,
+qrCorrectionLevel: document.getElementById('qrCorrectionLevel').value,
+fontSizeControl: document.getElementById('fontSizeControl').value,
+textAlignControl: document.getElementById('textAlignControl').value,
+fontWeightControl: document.getElementById('fontWeightControl').value,
+batchStartSerial: document.getElementById('batchStartSerial').value,
+batchModel: document.getElementById('batchModel').value,
+batchMade: document.getElementById('batchMade').value,
+toggleExtraField: document.getElementById('toggleExtraField').checked,
+extraTitle: document.getElementById('extraTitle').value,
+extraValue: document.getElementById('extraValue').value,
+batchUrl: document.getElementById('batchUrl').value,
+batchTotalCopies: document.getElementById('batchTotalCopies').value,
+batchCopiesPerSerial: document.getElementById('batchCopiesPerSerial').value,
+batchStep: document.getElementById('batchStep').value,
+layout: JSON.parse(JSON.stringify(elementPositions))
+};
+localStorage.setItem('sticker_presets', JSON.stringify(customPresets));
+populatePresetDropdown(); document.getElementById('batchSizeSelect').value = key; loadPreset();
+document.getElementById('customName').value = ''; showToast('Preset saved!', 'success');
+}
+function deletePreset(){
+const key = document.getElementById('batchSizeSelect').value; if(!key){ showToast('No preset selected.', 'error'); return; }
+delete customPresets[key]; localStorage.setItem('sticker_presets', JSON.stringify(customPresets));
+populatePresetDropdown(); loadPreset(); showToast('Preset removed.', 'info');
+}
+function populatePresetDropdown(){
+const select = document.getElementById('batchSizeSelect'); select.innerHTML = '<option value="">-- Custom --</option>';
+for(let k in customPresets){ const opt = document.createElement('option'); opt.value = k; opt.textContent = customPresets[k].name; select.appendChild(opt); }
+}
+function loadPresetsFromStorage(){
+try{ const data = localStorage.getItem('sticker_presets'); if(data) customPresets = JSON.parse(data); }catch(e){ customPresets = {}; }
+populatePresetDropdown();
+}
+function loadPreset(){
+const key = document.getElementById('batchSizeSelect').value, wInput = document.getElementById('customW'), hInput = document.getElementById('customH'), lockStatus = document.getElementById('presetLockStatus');
+if(key && customPresets[key]){
+const p = customPresets[key]; wInput.value = p.w; hInput.value = p.h;
+if(p.barcodeType) document.getElementById('barcodeType').value = p.barcodeType;
+if(p.qrCorrectionLevel) document.getElementById('qrCorrectionLevel').value = p.qrCorrectionLevel;
+if(p.fontSizeControl) document.getElementById('fontSizeControl').value = p.fontSizeControl;
+if(p.textAlignControl) document.getElementById('textAlignControl').value = p.textAlignControl;
+if(p.fontWeightControl) document.getElementById('fontWeightControl').value = p.fontWeightControl;
+if(p.batchStartSerial !== undefined) document.getElementById('batchStartSerial').value = p.batchStartSerial;
+if(p.batchModel !== undefined) document.getElementById('batchModel').value = p.batchModel;
+if(p.batchMade !== undefined) document.getElementById('batchMade').value = p.batchMade;
+if(p.toggleExtraField !== undefined){ document.getElementById('toggleExtraField').checked = p.toggleExtraField; toggleExtraFieldVisibility(); }
+if(p.extraTitle !== undefined) document.getElementById('extraTitle').value = p.extraTitle;
+if(p.extraValue !== undefined) document.getElementById('extraValue').value = p.extraValue;
+if(p.batchUrl !== undefined) document.getElementById('batchUrl').value = p.batchUrl;
+if(p.batchTotalCopies !== undefined) document.getElementById('batchTotalCopies').value = p.batchTotalCopies;
+if(p.batchCopiesPerSerial !== undefined) document.getElementById('batchCopiesPerSerial').value = p.batchCopiesPerSerial;
+if(p.batchStep !== undefined) document.getElementById('batchStep').value = p.batchStep;
+lockStatus.classList.remove('hidden');
+if(p.layout){ elementPositions = JSON.parse(JSON.stringify(p.layout)); applyElementPositions(); }
+updateTypographyStyles();
+} else { lockStatus.classList.add('hidden'); }
+updateCanvasDimensions();
+}
+function applyElementPositions(){
+['qr','model','made','extra','barcode'].forEach(k=>{
+const el = document.getElementById('drag-'+k); if(el && elementPositions[k]){ el.style.top = elementPositions[k].top+'%'; el.style.left = elementPositions[k].left+'%'; el.style.width = elementPositions[k].width+'%'; el.style.height = elementPositions[k].height+'%'; }
+});
+}
+function resetElementPositions(){
+elementPositions = {qr:{top:5,left:2.5,width:20,height:40},model:{top:5,left:25,width:67.5,height:14},made:{top:20,left:25,width:67.5,height:14},extra:{top:35,left:25,width:67.5,height:14},barcode:{top:50,left:25,width:67.5,height:35}};
+applyElementPositions(); triggerLivePreview(); showToast('Layout reset.', 'info');
+}
+function renderQRCode(containerId, text, size, correctionLevel){
+const container = document.getElementById(containerId); if(!container) return; container.innerHTML = '';
+try{
+new QRCode(container, {text: text, width: Math.max(120, Math.round(size * 2.5)), height: Math.max(120, Math.round(size * 2.5)), correctLevel: QRCode.CorrectLevel[correctionLevel] || QRCode.CorrectLevel.M});
+const img = container.querySelector('img'), canvas = container.querySelector('canvas');
+if(img){ img.style.width = '100%'; img.style.height = '100%'; img.style.objectFit = 'contain'; img.style.imageRendering = 'pixelated'; }
+if(canvas){ canvas.style.width = '100%'; canvas.style.height = '100%'; canvas.style.objectFit = 'contain'; canvas.style.imageRendering = 'pixelated'; }
+}catch(e){}
+}
+
+function renderBarcode(selector, text, format){
+const svgElement = document.querySelector(selector); if(!svgElement) return;
+try{
+JsBarcode(selector, text, {format: format, width: 2, height: 40, displayValue: true, fontSize: 13, margin: 2, flat: true});
+setTimeout(()=>{
+const bbox = svgElement.getBBox();
+if(bbox && bbox.width > 0){
+svgElement.setAttribute('viewBox', `0 0 ${bbox.width} ${bbox.height}`);
+svgElement.style.width = '100%';
+svgElement.style.height = '100%';
+svgElement.style.maxWidth = '100%';
+svgElement.style.maxHeight = '100%';
+}
+}, 30);
+}catch(e){
+const errEl = document.getElementById('barcodeError'); if(errEl) errEl.classList.remove('hidden');
+}
+}
+
+function triggerLivePreview(){
+updateQrMetrics();
+updateBarcodeMetrics(); // এখানে বারকোড মেট্রিকস কল করা হলো
+const model = document.getElementById('batchModel').value, made = document.getElementById('batchMade').value, serial = document.getElementById('batchStartSerial').value || '1001', url = document.getElementById('batchUrl').value || 'https://example.com', extraTitle = document.getElementById('extraTitle').value, extraValue = document.getElementById('extraValue').value;
+document.getElementById('txt-model').textContent = model ? "Model: "+model : "";
+document.getElementById('txt-made').textContent = made ? "Made: "+made : "";
+document.getElementById('txt-extra').textContent = (extraTitle || extraValue) ? `${extraTitle}${extraTitle && extraValue ? ': ':''}${extraValue}` : "";
+const barcodeType = document.getElementById('barcodeType').value, qrCorrection = document.getElementById('qrCorrectionLevel').value, barcodeError = document.getElementById('barcodeError');
+const canvas = document.getElementById('designerCanvas'), canvasW = canvas?.offsetWidth || 200, canvasH = canvas?.offsetHeight || 100;
+const qrPixelSize = Math.min((elementPositions.qr.width / 100) * canvasW, (elementPositions.qr.height / 100) * canvasH);
+renderQRCode('previewQr', url, qrPixelSize, qrCorrection);
+try{ renderBarcode("#previewBarcode", serial, barcodeType); barcodeError.classList.add('hidden'); }catch(e){ barcodeError.classList.remove('hidden'); }
+renderSingleLivePreviewCard(model, made, (extraTitle || extraValue) ? `${extraTitle}${extraTitle && extraValue ? ': ':''}${extraValue}` : null, serial, url, barcodeType, qrCorrection);
+}
+function generateCardDOM(model, made, extraText, serial, url, barcodeType, qrCorrection, scaleFactor, uniqueId){
+const card = document.createElement('div');
+card.className = "relative overflow-hidden bg-white shadow-sm border border-black text-black";
+const fontSize = (parseFloat(document.getElementById('fontSizeControl').value) * (scaleFactor / 4)) + 'px', textAlign = document.getElementById('textAlignControl').value, fontWeight = document.getElementById('fontWeightControl').value;
+card.innerHTML = `
+<div style="position:absolute;top:calc(${elementPositions.qr.top}% + 0.5mm);left:calc(${elementPositions.qr.left}% + 0.5mm);width:calc(${elementPositions.qr.width}% - 1mm);height:calc(${elementPositions.qr.height}% - 1mm);" class="flex items-center justify-center p-0.5"><div id="qr-${uniqueId}" class="w-full h-full flex items-center justify-center"></div></div>
+<div style="position:absolute;top:calc(${elementPositions.model.top}% + 0.5mm);left:calc(${elementPositions.model.left}% + 0.5mm);width:calc(${elementPositions.model.width}% - 1mm);height:calc(${elementPositions.model.height}% - 1mm);font-size:${fontSize};text-align:${textAlign};font-weight:${fontWeight};font-family:sans-serif;" class="truncate leading-none text-black">${model ? 'Model: '+escapeHtml(model):''}</div>
+<div style="position:absolute;top:calc(${elementPositions.made.top}% + 0.5mm);left:calc(${elementPositions.made.left}% + 0.5mm);width:calc(${elementPositions.made.width}% - 1mm);height:calc(${elementPositions.made.height}% - 1mm);font-size:${fontSize};text-align:${textAlign};font-weight:${fontWeight};font-family:sans-serif;" class="truncate leading-none text-black">${made ? 'Made: '+escapeHtml(made):''}</div>
+${extraText ? `<div style="position:absolute;top:calc(${elementPositions.extra.top}% + 0.5mm);left:calc(${elementPositions.extra.left}% + 0.5mm);width:calc(${elementPositions.extra.width}% - 1mm);height:calc(${elementPositions.extra.height}% - 1mm);font-size:${fontSize};text-align:${textAlign};font-weight:${fontWeight};font-family:sans-serif;" class="truncate leading-none text-black">${escapeHtml(extraText)}</div>`:''}
+<div style="position:absolute;top:calc(${elementPositions.barcode.top}% + 0.5mm);left:calc(${elementPositions.barcode.left}% + 0.5mm);width:calc(${elementPositions.barcode.width}% - 1mm);height:calc(${elementPositions.barcode.height}% - 1mm);" class="flex items-center justify-center overflow-hidden"><svg id="bar-${uniqueId}" class="w-full h-full" preserveAspectRatio="none"></svg></div>`;
+return card;
+}
+function escapeHtml(str){ return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+function renderSingleLivePreviewCard(model, made, extraText, serial, url, barcodeType, qrCorrection){
+const dims = getCanvasDimensions(), container = document.getElementById('singlePageLivePreview'); container.innerHTML = '';
+const scale = 3.5; container.style.width = (dims.w * scale) + 'px'; container.style.height = (dims.h * scale) + 'px';
+const card = generateCardDOM(model, made, extraText, serial, url, barcodeType, qrCorrection, scale, 'live');
+card.style.width = '100%'; card.style.height = '100%'; container.appendChild(card);
+const qrSize = Math.min((dims.w * scale) * (elementPositions.qr.width / 100), (dims.h * scale) * (elementPositions.qr.height / 100));
+renderQRCode('qr-live', url, qrSize, qrCorrection);
+try{ renderBarcode("#bar-live", serial, barcodeType); }catch(e){}
+}
+function initDraggableElements(){
+const canvas = document.getElementById('designerCanvas');
+['qr','model','made','extra','barcode'].forEach(k=>{
+const el = document.getElementById('drag-'+k); if(!el) return;
+const dragAction = e => {
+e.preventDefault(); e.stopPropagation();
+const canvasW = canvas.offsetWidth, canvasH = canvas.offsetHeight, isResize = e.target.classList.contains('resize-handle');
+const startX = e.touches ? e.touches[0].clientX : e.clientX, startY = e.touches ? e.touches[0].clientY : e.clientY;
+const initialW = el.offsetWidth, initialH = el.offsetHeight, initialX = el.offsetLeft, initialY = el.offsetTop;
+const onMove = me => {
+const cx = me.touches ? me.touches[0].clientX : me.clientX, cy = me.touches ? me.touches[0].clientY : me.clientY;
+const dx = cx - startX, dy = cy - startY;
+if(isResize){
+elementPositions[k].width = (Math.max(20, Math.min(canvasW - initialX, initialW + dx)) / canvasW) * 100;
+elementPositions[k].height = (Math.max(10, Math.min(canvasH - initialY, initialH + dy)) / canvasH) * 100;
+} else {
+elementPositions[k].left = (Math.max(0, Math.min(canvasW - initialW, initialX + dx)) / canvasW) * 100;
+elementPositions[k].top = (Math.max(0, Math.min(canvasH - initialH, initialY + dy)) / canvasH) * 100;
+}
+applyElementPositions(); triggerLivePreview();
+};
+const onEnd = () => {
+document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onEnd);
+document.removeEventListener('touchmove', onMove); document.removeEventListener('touchend', onEnd);
+};
+document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onEnd);
+document.addEventListener('touchmove', onMove, {passive:false}); document.addEventListener('touchend', onEnd);
+};
+el.addEventListener('mousedown', dragAction); el.addEventListener('touchstart', dragAction, {passive:false});
+});
+}
+function executeBatchPrint(){
+const loader = document.getElementById('printLoader'); loader.classList.remove('hidden');
+setTimeout(()=>{
+const dims = getCanvasDimensions(), startSerial = document.getElementById('batchStartSerial').value || "1001";
+const totalCopies = Math.min(1000, parseInt(document.getElementById('batchTotalCopies').value) || 50);
+const copiesPerSerial = parseInt(document.getElementById('batchCopiesPerSerial').value) || 2;
+const step = parseInt(document.getElementById('batchStep').value) || 1;
+const url = document.getElementById('batchUrl').value, model = document.getElementById('batchModel').value, made = document.getElementById('batchMade').value;
+const extraTitle = document.getElementById('extraTitle').value, extraValue = document.getElementById('extraValue').value, hasExtra = document.getElementById('toggleExtraField').checked;
+const barcodeType = document.getElementById('barcodeType').value, qrCorrection = document.getElementById('qrCorrectionLevel').value;
+const batchContainer = document.getElementById('batchPrintContainer'); batchContainer.innerHTML = '';
+let match = startSerial.match(/^(.*?)(\d+)$/), prefix = match ? match[1] : '', numVal = match ? parseInt(match[2], 10) : 0;
+const fragment = document.createDocumentFragment();
+const extraText = (extraTitle || extraValue) ? `${extraTitle}${extraTitle && extraValue ? ': ':''}${extraValue}` : "";
+for(let i=0; i<totalCopies; i++){
+let currentSerial = startSerial;
+if(match){ let n = numVal + (Math.floor(i / copiesPerSerial) * step); currentSerial = prefix + n.toString().padStart(match[2].length, '0'); }
+const card = generateCardDOM(model, made, hasExtra ? extraText : null, currentSerial, url, barcodeType, qrCorrection, 3.77, i);
+card.style.width = dims.w + 'mm'; card.style.height = dims.h + 'mm';
+card.className = "batch-card relative overflow-hidden bg-white text-black";
+fragment.appendChild(card);
+}
+batchContainer.appendChild(fragment);
+for(let i=0; i<totalCopies; i++){
+let currentSerial = startSerial;
+if(match){ let n = numVal + (Math.floor(i / copiesPerSerial) * step); currentSerial = prefix + n.toString().padStart(match[2].length, '0'); }
+try{ renderBarcode("#bar-"+i, currentSerial, barcodeType); }catch(e){}
+const qrSize = Math.min(dims.w * (elementPositions.qr.width / 100), dims.h * (elementPositions.qr.height / 100)) * 3.77;
+renderQRCode("qr-"+i, url, qrSize, qrCorrection);
+}
+document.getElementById('dynamicPrintStyle').innerHTML = `@media print{@page{size:${dims.w}mm ${dims.h}mm!important;margin:0!important}body,html{width:${dims.w}mm!important;height:${dims.h}mm!important;margin:0!important;padding:0!important}}`;
+setTimeout(()=>{ loader.classList.add('hidden'); showToast('Batch prepared!', 'success'); window.print(); }, 400);
+}, 50);
+}
+window.addEventListener('afterprint', ()=>{
+document.getElementById('batchPrintContainer').innerHTML = '';
+document.getElementById('printLoader').classList.add('hidden');
+});
+function exportConfigJSON(){
+const configData = {elementPositions, customPresets};
+const a = document.createElement('a'); a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configData));
+a.download = 'thermal_sticker_config.json'; a.click(); showToast('Exported!', 'success');
+}
+function importConfigJSON(e){
+const file = e.target.files[0]; if(!file) return;
+const reader = new FileReader();
+reader.onload = evt => {
+try{
+const parsed = JSON.parse(evt.target.result);
+if(parsed.elementPositions) elementPositions = parsed.elementPositions;
+if(parsed.customPresets) customPresets = parsed.customPresets;
+localStorage.setItem('sticker_presets', JSON.stringify(customPresets));
+populatePresetDropdown(); applyElementPositions(); triggerLivePreview(); showToast('Imported!', 'success');
+}catch(err){ showToast('Invalid JSON!', 'error'); }
+};
+reader.readAsText(file);
+}
+window.onload = () => { checkAuth(); loadPresetsFromStorage(); initDraggableElements(); updateCanvasDimensions(); };
+</script>
+</body>
+</html>
