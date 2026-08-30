@@ -8,8 +8,8 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// MongoDB ক্লাউড কানেকশন স্ট্রিং (আপনার রিয়েল লিংকটি এখানে সেট করা হলো)
-const MONGO_URI = 'mongodb+srv://egpshomrat_db_user:62AKjIuYCyJvoXKm@cluster0.bgvuwix.mongodb.net/spanish_egp?retryWrites=true&w=majority&appName=Cluster0';
+// MongoDB ক্লাউড কানেকশন স্ট্রিং (Render Environment Variable থেকে রিড করবে)
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://egpshomrat_db_user:62AKjIuYCYjvoXKm@cluster0.bgvuwix.mongodb.net/spanish_egp?retryWrites=true&w=majority&appName=Cluster0';
 
 mongoose.connect(MONGO_URI)
 .then(() => console.log('Database connected successfully!'))
@@ -27,12 +27,12 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// Nodemailer কনফিগারেশন (আপনার জিমেইল এবং অ্যাপ পাসওয়ার্ড সহ)
+// Nodemailer কনফিগারেশন (Render Environment Variable থেকে রিড করবে)
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'egpshomrat@gmail.com',
-        pass: 'qvjq nofg nmdi rcqd'
+        user: process.env.EMAIL_USER || 'egpshomrat@gmail.com',
+        pass: process.env.EMAIL_PASS || 'qvjq nofg nmdi rcqd'
     }
 });
 
@@ -64,7 +64,7 @@ app.post('/api/signup', async (req, res) => {
         }
 
         const mailOptions = {
-            from: 'egpshomrat@gmail.com',
+            from: process.env.EMAIL_USER || 'egpshomrat@gmail.com',
             to: email,
             subject: 'Spanish Egp Pro - Account Verification OTP',
             text: `আপনার Spanish Egp Pro সফটওয়্যারের ওটিপি কোড হলো: ${otp}. কোডটি কাউকেই শেয়ার করবেন না।`
@@ -75,7 +75,7 @@ app.post('/api/signup', async (req, res) => {
 
     } catch (error) {
         console.error('Signup error:', error);
-        res.json({ success: false, message: 'সার্ভারে সমস্যা হয়েছে! আবার চেষ্টা করুন।' });
+        res.json({ success: false, message: 'সার্ভারে সমস্যা হয়েছে! আবার চেষ্টা করুন।' });
     }
 });
 
@@ -99,7 +99,7 @@ app.post('/api/verify-signup-otp', async (req, res) => {
         }
     } catch (error) {
         console.error('OTP Verification error:', error);
-        res.json({ success: false, message: 'ভেরিফিকেশনে সমস্যা হয়েছে!' });
+        res.json({ success: false, message: 'ভেরিফিকেশনে সমস্যা হয়েছে!' });
     }
 });
 
@@ -110,7 +110,7 @@ app.post('/api/signin', async (req, res) => {
         const user = await User.findOne({ username });
 
         if (!user || !user.isVerified || user.password !== password) {
-            return res.json({ success: false, message: 'ভুল ইউজারনেম, পাসওয়ার্ড অথবা অ্যাকাউন্ট ভেরিফাই করা হয়নি!' });
+            return res.json({ success: false, message: 'ভুল ইউজারনেম, পাসওয়ার্ড অথবা অ্যাকাউন্ট ভেরিফাই করা হয়নি!' });
         }
 
         res.json({ 
@@ -120,7 +120,7 @@ app.post('/api/signin', async (req, res) => {
         });
     } catch (error) {
         console.error('Signin error:', error);
-        res.json({ success: false, message: 'লগইন করতে সমস্যা হয়েছে!' });
+        res.json({ success: false, message: 'লগইন করতে সমস্যা হয়েছে!' });
     }
 });
 
