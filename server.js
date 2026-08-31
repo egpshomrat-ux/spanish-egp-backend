@@ -5,17 +5,24 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+
+// CORS কনফিগারেশন যেন যেকোনো ফ্রন্টএন্ড থেকে রিকোয়েস্ট গ্রহণ করতে পারে
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(bodyParser.json());
 
-// MongoDB ক্লাউড কানেকশন স্ট্রিং (Render Environment Variable থেকে রিড করবে)
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://egpshomrat_db_user:62AKjIuYCYjvoXKm@cluster0.bgvuwix.mongodb.net/spanish_egp?retryWrites=true&w=majority&appName=Cluster0';
+// MongoDB ক্লাউড কানেকশন স্ট্রিং
+const MONGO_URI = process.env.MONGO_URI;
 
 mongoose.connect(MONGO_URI)
 .then(() => console.log('Database connected successfully!'))
 .catch(err => console.error('Database connection error:', err));
 
-// ইউজার স্কিমা ও মডেল (ডেটাবেজে ইউজার সংরক্ষণের জন্য)
+// ইউজার স্কিমা ও মডেল
 const userSchema = new mongoose.Schema({
     companyName: { type: String, required: true },
     username: { type: String, required: true, unique: true },
@@ -27,12 +34,12 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// Nodemailer কনফিগারেশন (Render Environment Variable থেকে রিড করবে)
+// Nodemailer কনফিগারেশন
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER || 'egpshomrat@gmail.com',
-        pass: process.env.EMAIL_PASS || 'qvjq nofg nmdi rcqd'
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 
@@ -41,7 +48,7 @@ function generateOTP() {
     return Math.floor(1000000000 + Math.random() * 9000000000).toString();
 }
 
-// ১. সাইন-আপ রুট (ওটিপি পাঠানো এবং ডাটাবেজে পেন্ডিং সেভ করা)
+// ১. সাইন-আপ রুট
 app.post('/api/signup', async (req, res) => {
     try {
         const { companyName, username, email, password } = req.body;
@@ -64,7 +71,7 @@ app.post('/api/signup', async (req, res) => {
         }
 
         const mailOptions = {
-            from: process.env.EMAIL_USER || 'egpshomrat@gmail.com',
+            from: process.env.EMAIL_USER,
             to: email,
             subject: 'Spanish Egp Pro - Account Verification OTP',
             text: `আপনার Spanish Egp Pro সফটওয়্যারের ওটিপি কোড হলো: ${otp}. কোডটি কাউকেই শেয়ার করবেন না।`
