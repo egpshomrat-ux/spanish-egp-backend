@@ -158,6 +158,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background-color:#0f172a;color:#
 <script>
 lucide.createIcons();
 
+const API_URL = 'https://spanish-egp-backend.onrender.com';
+
 const pwaManifestData = {"name":"Spanish Egp Thermal Print Pro","short_name":"Spanish Egp","description":"Enterprise Thermal Label Printing Suite","start_url":window.location.href,"display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'%3E%3Cpath d='M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z'/%3E%3C/svg%3E","sizes":"192x192 512x512","type":"image/svg+xml"}]};
 const pwaBlob = new Blob([JSON.stringify(pwaManifestData)],{type:'application/json'});
 document.getElementById('pwaManifest').setAttribute('href',URL.createObjectURL(pwaBlob));
@@ -205,7 +207,7 @@ const username = document.getElementById('signInEmail').value;
 const password = document.getElementById('signInPassword').value;
 
 try {
-const response = await fetch('http://localhost:3000/api/signin', {
+const response = await fetch(`${API_URL}/api/signin`, {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({ username, password })
@@ -223,7 +225,7 @@ showToast(data.message, 'success');
 showToast(data.message, 'error');
 }
 } catch(err) {
-showToast('সার্ভার বন্ধ আছে অথবা সংযোগ করা যায়নি!', 'error');
+showToast('সার্ভারের সাথে সংযোগ স্থাপন করা যায়নি!', 'error');
 }
 }
 
@@ -236,7 +238,7 @@ const password = document.getElementById('signUpPassword').value;
 tempUsernameForOtp = username;
 
 try {
-const response = await fetch('http://localhost:3000/api/signup', {
+const response = await fetch(`${API_URL}/api/signup`, {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({ companyName, username, email, password })
@@ -260,7 +262,7 @@ const otp = document.getElementById('otpInputCode').value.trim();
 if(!otp){ showToast('দয়া করে ওটিপি কোড দিন', 'error'); return; }
 
 try {
-const response = await fetch('http://localhost:3000/api/verify-signup-otp', {
+const response = await fetch(`${API_URL}/api/verify-signup-otp`, {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({ username: tempUsernameForOtp, otp })
@@ -316,7 +318,6 @@ qrDisplay.innerHTML = `📱 QR: ${qrSide}mm (${qrArea}mm²) ${isGoodSize ? '🟢
 qrMiniPreview.innerText = `QR: ${qrSide}×${qrSide}mm`;
 }
 
-// নতুন ডাইনামিক বারকোড মেট্রিকস ফাংশন
 function updateBarcodeMetrics(){
 const dims = getCanvasDimensions();
 const barW_mm = (dims.w * (elementPositions.barcode.width / 100)).toFixed(1);
@@ -447,7 +448,7 @@ const errEl = document.getElementById('barcodeError'); if(errEl) errEl.classList
 
 function triggerLivePreview(){
 updateQrMetrics();
-updateBarcodeMetrics(); // এখানে বারকোড মেট্রিকস কল করা হলো
+updateBarcodeMetrics();
 const model = document.getElementById('batchModel').value, made = document.getElementById('batchMade').value, serial = document.getElementById('batchStartSerial').value || '1001', url = document.getElementById('batchUrl').value || 'https://example.com', extraTitle = document.getElementById('extraTitle').value, extraValue = document.getElementById('extraValue').value;
 document.getElementById('txt-model').textContent = model ? "Model: "+model : "";
 document.getElementById('txt-made').textContent = made ? "Made: "+made : "";
